@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() => runApp(MyApp());
 
@@ -34,10 +35,19 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
-    
-    var _position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    // Map<PermissionGroup, PermissionStatus> permissions =
+    //     await PermissionHandler()
+    //         .requestPermissions([PermissionGroup.location]);
+
+    Geolocator geolocator = Geolocator()..forceAndroidLocationManager = true;
+    GeolocationStatus geolocationStatus =
+        await geolocator.checkGeolocationPermissionStatus();
+    var _position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
-      _positionString =_position.latitude.toString();
+      _positionString = _position.latitude.toString();
+      // _positionString = geolocationStatus.toString();
     });
   }
 
@@ -58,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
               'You have pushed the button this many times:',
             ),
             Text(
-              '$_counter  -> '+' $_positionString',
+              '$_counter  -> ' + ' $_positionString',
               style: Theme.of(context).textTheme.display1,
             ),
           ],
